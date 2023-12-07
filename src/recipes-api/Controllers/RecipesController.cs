@@ -60,11 +60,6 @@ public class RecipesController : ControllerBase
             _service.UpdateRecipe(recipe);
             return NoContent();
         }
-        else if (!recipeExist)
-        {
-            _service.AddRecipe(recipe);
-            return NoContent();
-        }
         return BadRequest();
     }
 
