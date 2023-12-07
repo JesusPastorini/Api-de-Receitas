@@ -12,12 +12,12 @@ namespace recipes_api.Controllers;
 [ApiController]
 [Route("recipe")]
 public class RecipesController : ControllerBase
-{    
+{
     public readonly IRecipeService _service;
-    
+
     public RecipesController(IRecipeService service)
     {
-        this._service = service;        
+        this._service = service;
     }
 
     // 1 - Sua aplicação deve ter o endpoint GET /recipe
@@ -25,29 +25,47 @@ public class RecipesController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        throw new NotImplementedException();    
+        var recipes = _service.GetRecipes();
+        return Ok(recipes);
     }
 
     // 2 - Sua aplicação deve ter o endpoint GET /recipe/:name
     //Read
     [HttpGet("{name}", Name = "GetRecipe")]
     public IActionResult Get(string name)
-    {                
-        throw new NotImplementedException();
+    {
+        var returnName = _service.GetRecipe(name);
+        if (returnName == null)
+        {
+            return NotFound();
+        }
+        return Ok(returnName);
     }
 
     // 3 - Sua aplicação deve ter o endpoint POST /recipe
     [HttpPost]
-    public IActionResult Create([FromBody]Recipe recipe)
+    public IActionResult Create([FromBody] Recipe recipe)
     {
-        throw new NotImplementedException();
+        _service.AddRecipe(recipe);
+        return Created("", recipe);
     }
 
     // 4 - Sua aplicação deve ter o endpoint PUT /recipe
     [HttpPut("{name}")]
-    public IActionResult Update(string name, [FromBody]Recipe recipe)
+    public IActionResult Update(string name, [FromBody] Recipe recipe)
     {
-        throw new NotImplementedException();
+        var recipeExist = _service.RecipeExists(recipe.Name);
+        if (recipeExist)
+        {
+            _service.UpdateRecipe(recipe);
+            return NoContent();
+        }
+        else if (!recipeExist)
+        {
+            _service.AddRecipe(recipe);
+            return NoContent();
+        }
+        return BadRequest();
     }
 
     // 5 - Sua aplicação deve ter o endpoint DEL /recipe
@@ -55,5 +73,5 @@ public class RecipesController : ControllerBase
     public IActionResult Delete(string name)
     {
         throw new NotImplementedException();
-    }    
+    }
 }
