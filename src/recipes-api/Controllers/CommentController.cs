@@ -32,6 +32,8 @@ public class CommentController : ControllerBase
     [HttpGet("{name}", Name = "GetComment")]
     public IActionResult Get(string name)
     {
-        throw new NotImplementedException();
+        var user = _service.GetComments(name);
+        if (user == null) return NotFound();
+        return Ok(user);
     }
 }
