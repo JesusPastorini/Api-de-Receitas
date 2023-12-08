@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace recipes_api.Controllers;
 
@@ -41,7 +42,20 @@ public class UserController : ControllerBase
     [HttpPut("{email}")]
     public IActionResult Update(string email, [FromBody] User user)
     {
-        throw new NotImplementedException();
+        string emailPattern = @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$";
+        Regex regex = new Regex(emailPattern);
+
+        // verificar se o e-mail corresponde ao padrão
+        bool validEmail = regex.IsMatch(user.Email);
+        if (!validEmail || email != user.Email) return BadRequest();
+        var userExist = _service.UserExists(user.Email);
+        if (userExist)
+        {
+            _service.UpdateUser(user);
+            return Ok(user);
+        }
+        return NotFound();
+
     }
 
     // 9 - Sua aplicação deve ter o endpoint DEL /user
